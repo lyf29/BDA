@@ -1,0 +1,47 @@
+def mapper(text):
+    words = text.split()
+    for word in words:
+        yield word.lower(), 1  
+
+
+def shuffle_and_sort(mapped_results):
+    shuffled_data = {}
+    for word, count in mapped_results:  # Iterate over (word, count) tuples
+        if word in shuffled_data:
+            shuffled_data[word].append(count)
+        else:
+            shuffled_data[word] = [count]
+    # Sort the keys alphabetically
+    sorted_data = sorted(shuffled_data.items())
+    return sorted_data
+
+
+def reducer(shuffled_data):
+    final_count = {}
+    for word, counts in shuffled_data:
+        final_count[word] = sum(counts)
+    return final_count
+
+
+if __name__ == "__main__":
+    input_text = """
+    Hello world
+    Hello sheeesh
+    MapReduce is powerful
+    Hello again
+    Bye Bye
+    """
+
+    lines = input_text.strip().split("\n")
+
+    mapped_results = []
+    for line in lines:
+        mapped_results.extend(mapper(line))
+
+    shuffled_data = shuffle_and_sort(mapped_results)
+
+    final_word_count = reducer(shuffled_data)
+
+    print("Word Frequency:")
+    for word, count in final_word_count.items():
+        print(f"{word}: {count}")
